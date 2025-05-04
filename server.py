@@ -10,6 +10,7 @@ import logging
 # если бы такое обращение, например, произошло внутри модуля logging,
 # то мы бы получили 'logging'
 app = Flask(__name__)
+count = 1
 
 # Устанавливаем уровень логирования
 logging.basicConfig(level=logging.INFO)
@@ -56,8 +57,12 @@ def main():
 
 
 def handle_dialog(req, res):
+    global count
     user_id = req['session']['user_id']
-
+    if count == 1:
+        s = 'Слона'
+    else:
+        s = 'Кролика'
     if req['session']['new']:
         # Это новый пользователь.
         # Инициализируем сессию и поприветствуем его.
@@ -93,13 +98,14 @@ def handle_dialog(req, res):
         'Я куплю'
     ]:
         # Пользователь согласился, прощаемся.
-        res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!'
+        count += 1
+        res['response']['text'] = f'{s} можно найти на Яндекс.Маркете!'
         res['response']['end_session'] = True
         return
 
     # Если нет, то убеждаем его купить слона!
     res['response']['text'] = \
-        f"Все говорят '{req['request']['original_utterance']}', а ты купи слона!"
+        f"Все говорят '{req['request']['original_utterance']}', а ты купи {s.lower()}!"
     res['response']['buttons'] = get_suggests(user_id)
 
 
