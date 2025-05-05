@@ -98,7 +98,6 @@ def get_suggests(user_id):
     # Меняем подсказки динамически
     session['suggests'] = session['suggests'][1:] + session['suggests'][:1]
     sessionStorage[user_id] = session
-
     # Добавляем ссылку на маркет, если меньше двух подсказок
     if len(suggests) < 2:
         suggests.append({
