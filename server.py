@@ -61,7 +61,7 @@ def handle_dialog(req, res):
     user_id = req['session']['user_id']
     if count == 1:
         s = 'Слона'
-    else:
+    elif count == 2:
         s = 'Кролика'
     if req['session']['new']:
         # Это новый пользователь.
@@ -73,10 +73,12 @@ def handle_dialog(req, res):
                 "Не хочу.",
                 "Не буду.",
                 "Отстань!",
+                'Я покупаю',
+                'Я куплю'
             ]
         }
         # Заполняем текст ответа
-        res['response']['text'] = 'Привет! Купи слона!'
+        res['response']['text'] = f'Привет! Купи {s.lower()}!'
         # Получим подсказки
         res['response']['buttons'] = get_suggests(user_id)
         return
