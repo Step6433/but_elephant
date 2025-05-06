@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import logging
+import time
 
 # Создаем приложение
 app = Flask(__name__)
@@ -63,7 +64,7 @@ def handle_dialog(req, res):
         else:
             s = 'Кролика'
         res['response']['text'] = f'{s} можно найти на Яндекс.Маркете!'
-
+        time.sleep(3)
         # Обнуляем цикл и начинаем заново
         count += 1
         sessionStorage[user_id] = {
