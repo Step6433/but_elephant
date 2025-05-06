@@ -4,7 +4,6 @@ import logging
 # Создаем приложение
 app = Flask(__name__)
 count = 1
-flag = 0
 
 # Устанавливаем уровень логирования
 logging.basicConfig(level=logging.INFO)
@@ -34,9 +33,9 @@ def main():
 
 
 def handle_dialog(req, res):
-    global count, flag
+    global count
     user_id = req['session']['user_id']
-    if req['session']['new'] or flag == 1:
+    if req['session']['new']:
         # Новый пользователь — приветствие и предложение первой покупки
         sessionStorage[user_id] = {
             'suggests': [
@@ -47,7 +46,6 @@ def handle_dialog(req, res):
                 'Я куплю'
             ]
         }
-        flag = 0
         if count % 2 == 1:
             s = 'Слона'
         else:
@@ -68,14 +66,20 @@ def handle_dialog(req, res):
 
         # Обнуляем цикл и начинаем заново
         count += 1
-        flag = 1
-        sessionStorage[user_id]['suggests'] = [
-            "Не хочу.",
-            "Не буду.",
-            "Отстань!",
-            'Я покупаю',
-            'Я куплю'
-        ]
+        sessionStorage[user_id] = {
+            'suggests': [
+                "Не хочу.",
+                "Не буду.",
+                "Отстань!",
+                'Я покупаю',
+                'Я куплю'
+            ]
+        }
+        if count % 2 == 1:
+            s = 'Слона'
+        else:
+            s = 'Кролика'
+        res['response']['text'] = f'Привет! Купи {s.lower()}!'
         res['response']['buttons'] = get_suggests(user_id)
         return
 
