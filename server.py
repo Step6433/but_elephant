@@ -5,6 +5,7 @@ import time
 # Создаем приложение
 app = Flask(__name__)
 count = 1
+flag = 0
 
 # Устанавливаем уровень логирования
 logging.basicConfig(level=logging.INFO)
@@ -31,9 +32,9 @@ def main():
 
 
 def handle_dialog(req, res):
-    global count
+    global count, flag
     user_id = req['session']['user_id']
-    if req['session']['new']:
+    if req['session']['new'] or flag == 1:
         # Новый пользователь — приветствие и предложение первой покупки
         sessionStorage[user_id] = {
             'suggests': [
@@ -44,6 +45,7 @@ def handle_dialog(req, res):
                 'Я куплю'
             ]
         }
+        flag = 0
         if count % 2 == 1:
             s = 'Слона'
         else:
@@ -63,6 +65,7 @@ def handle_dialog(req, res):
         count += 1
         res['response']['text'] = f'{s} можно найти на Яндекс.Маркете!'
         res['response']['buttons'] = get_suggests(user_id)
+        flag = 1
         return
 
     # Если пользователь отказался покупать, продолжаем уговаривать
