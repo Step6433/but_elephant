@@ -58,14 +58,10 @@ def handle_dialog(req, res):
         # Покупатель согласился — сообщаем, где искать животное
         if count % 2 == 1:
             s = 'Слона'
-            ns = 'Кролика'
         else:
             s = 'Кролика'
-            ns = 'Слона'
+        count += 1
         res['response']['text'] = f'{s} можно найти на Яндекс.Маркете!'
-        res['response']['buttons'] = get_suggests(user_id)
-        req['request']['original_utterance'] = ''
-        res['response']['text'] = f'Привет! Купи {s.lower()}!'
         res['response']['buttons'] = get_suggests(user_id)
         return
 
@@ -100,4 +96,5 @@ def get_suggests(user_id):
 
 
 if __name__ == '__main__':
-    app.run()
+    while True:
+        app.run()
