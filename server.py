@@ -15,20 +15,19 @@ sessionStorage = {}
 
 @app.route('/post', methods=['POST'])
 def main():
-    while True:
-        logging.info(f'Request: {request.json!r}')
+    logging.info(f'Request: {request.json!r}')
 
         # Формируем базовый ответ
-        response = {
-            'session': request.json['session'],
-            'version': request.json['version'],
-            'response': {
-                'end_session': False
-            }
+    response = {
+        'session': request.json['session'],
+        'version': request.json['version'],
+        'response': {
+            'end_session': False
         }
-        handle_dialog(request.json, response)
-        logging.info(f'Response:  {response!r}')
-        return jsonify(response)
+    }
+    handle_dialog(request.json, response)
+    logging.info(f'Response:  {response!r}')
+    return jsonify(response)
 
 
 def handle_dialog(req, res):
@@ -59,9 +58,14 @@ def handle_dialog(req, res):
         # Покупатель согласился — сообщаем, где искать животное
         if count % 2 == 1:
             s = 'Слона'
+            ns = 'Кролика'
         else:
             s = 'Кролика'
+            ns = 'Слона'
         res['response']['text'] = f'{s} можно найти на Яндекс.Маркете!'
+        res['response']['buttons'] = get_suggests(user_id)
+        req['request']['original_utterance'] = ''
+        res['response']['text'] = f'Привет! Купи {s.lower()}!'
         res['response']['buttons'] = get_suggests(user_id)
         return
 
