@@ -15,22 +15,20 @@ sessionStorage = {}
 
 @app.route('/post', methods=['POST'])
 def main():
-    logging.info(f'Request: {request.json!r}')
+    while True:
+        logging.info(f'Request: {request.json!r}')
 
-    # Формируем базовый ответ
-    response = {
-        'session': request.json['session'],
-        'version': request.json['version'],
-        'response': {
-            'end_session': False
+        # Формируем базовый ответ
+        response = {
+            'session': request.json['session'],
+            'version': request.json['version'],
+            'response': {
+                'end_session': False
+            }
         }
-    }
-
-    # Обрабатываем входящий запрос
-    handle_dialog(request.json, response)
-    logging.info(f'Response:  {response!r}')
-
-    return jsonify(response)
+        handle_dialog(request.json, response)
+        logging.info(f'Response:  {response!r}')
+        return jsonify(response)
 
 
 def handle_dialog(req, res):
@@ -64,23 +62,6 @@ def handle_dialog(req, res):
         else:
             s = 'Кролика'
         res['response']['text'] = f'{s} можно найти на Яндекс.Маркете!'
-        time.sleep(3)
-        # Обнуляем цикл и начинаем заново
-        count += 1
-        sessionStorage[user_id] = {
-            'suggests': [
-                "Не хочу.",
-                "Не буду.",
-                "Отстань!",
-                'Я покупаю',
-                'Я куплю'
-            ]
-        }
-        if count % 2 == 1:
-            s = 'Слона'
-        else:
-            s = 'Кролика'
-        res['response']['text'] = f'Привет! Купи {s.lower()}!'
         res['response']['buttons'] = get_suggests(user_id)
         return
 
