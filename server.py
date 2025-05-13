@@ -4,8 +4,7 @@ import time
 
 # Создаем приложение
 app = Flask(__name__)
-count = 1
-flag = 0
+cur_animal = "слон"  # Начальное животное
 
 # Устанавливаем уровень логирования
 logging.basicConfig(level=logging.INFO)
@@ -18,7 +17,7 @@ sessionStorage = {}
 def main():
     logging.info(f'Request: {request.json!r}')
 
-        # Формируем базовый ответ
+    # Формируем базовый ответ
     response = {
         'session': request.json['session'],
         'version': request.json['version'],
@@ -32,10 +31,11 @@ def main():
 
 
 def handle_dialog(req, res):
-    global count, flag
+    global cur_animal
     user_id = req['session']['user_id']
-    if req['session']['new'] or flag == 1:
-        # Новый пользователь — приветствие и предложение первой покупки
+
+    if req['session']['new']:
+        # Новое начало диалога — предлагаем первое животное
         sessionStorage[user_id] = {
             'suggests': [
                 "Не хочу.",
@@ -45,35 +45,32 @@ def handle_dialog(req, res):
                 'Я куплю'
             ]
         }
-        flag = 0
-        if count % 2 == 1:
-            s = 'Слона'
-        else:
-            s = 'Кролика'
-        res['response']['text'] = f'Привет! Купи {s.lower()}!'
+
+        res['response']['text'] = f'Привет! Купи {cur_animal.lower()}!'
         res['response']['buttons'] = get_suggests(user_id)
         return
 
     # Проверяем согласие пользователя на покупку
     data = ['ладно', 'куплю', 'покупаю', 'хорошо', 'я покупаю', 'я куплю']
     if any(i in req['request']['original_utterance'].lower() for i in data):
-        # Покупатель согласился — сообщаем, где искать животное
-        if count % 2 == 1:
-            s = 'Слона'
-        else:
-            s = 'Кролика'
-        count += 1
-        res['response']['text'] = f'{s} можно найти на Яндекс.Маркете!'
+        # Пользователь согласился — сообщаем, где искать животное
+        animal = cur_animal
+        res['response']['text'] = f'{animal.capitalize()} можно найти на Яндекс.Маркете!'
         res['response']['buttons'] = get_suggests(user_id)
-        flag = 1
+
+        # Переключаемся на следующее животное
+        if cur_animal == "слон":
+            cur_animal = "кролик"
+        elif cur_animal == "кролик":
+            cur_animal = "слон"
+
+        # Начинаем следующий цикл покупки с новым животным
+        res['response']['text'] += f'\n\nКупи теперь {cur_animal.lower()}!'
         return
 
     # Если пользователь отказался покупать, продолжаем уговаривать
-    if count % 2 == 1:
-        s = 'Слона'
-    else:
-        s = 'Кролика'
-    res['response']['text'] = f"Все говорят '{req['request']['original_utterance']}', а ты купи {s.lower()}!"
+    res['response'][
+        'text'] = f"Все говорят '{req['request']['original_utterance']}', а ты купи {cur_animal.lower()}!"
     res['response']['buttons'] = get_suggests(user_id)
 
 
