@@ -4,7 +4,7 @@ import time
 
 # Создаем приложение
 app = Flask(__name__)
-cur_animal = "слон"  # Начальное животное
+cur_animal = "слона"  # Начальное животное
 
 # Устанавливаем уровень логирования
 logging.basicConfig(level=logging.INFO)
@@ -59,10 +59,10 @@ def handle_dialog(req, res):
         res['response']['buttons'] = get_suggests(user_id)
 
         # Переключаемся на следующее животное
-        if cur_animal == "слон":
-            cur_animal = "кролик"
-        elif cur_animal == "кролик":
-            cur_animal = "слон"
+        if cur_animal == "слона":
+            cur_animal = "кролика"
+        elif cur_animal == "кролика":
+            cur_animal = "слона"
 
         # Начинаем следующий цикл покупки с новым животным
         res['response']['text'] += f'\n\nКупи теперь {cur_animal.lower()}!'
